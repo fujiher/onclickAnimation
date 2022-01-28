@@ -3,30 +3,52 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>クリックするとアニメ</title>
-<style type="text/css">
+		<style type="text/css">
 #screen {
 	width: 640px;
 	height: 480px;
 	border: 1px solid;
-	background: url("anime1.png") no-repeat;
+	background: url("anime1.png") no-repeat; /* 一番最初に表示されている画像を指定 */
 }
 
-.moving {
-	animation: sixFrame 1s steps(5) forwards;
-}
+/* 同じキーフレームでもカットの数と同じだけ用意する必要 */
+	@keyframes sixFrame1 {
+		0% {
+			background-position: 0 0;
+		}
+		100% {
+			background-position: -3200px 0; /* <スクリーンの横幅> - <1カット画像の横幅> */
+		}
+	}
 
-@keyframes sixFrame {
-	0% {
-		background-position: 0 0;
+	@keyframes sixFrame2 {
+		0% {
+			background-position: 0 0;
+		}
+		100% {
+			background-position: -3200px 0;
+		}
 	}
-	100% {
-		background-position: -3200px 0;
-	}
-}
-</style>
+		</style>
+		<script type="text/javascript">
+			/* bodyの最後にscript記述するとdiv読み込み～playNextAnimation定義の間にクリックされたときにバグるのでhead内script */
+			var animeList = [
+							["anime2.png", "sixFrame2 1s steps(5) forwards"], /* <カット画像名>, <キーフレーム名> <再生時間> <フレーム数 - 1> forwards */
+							["anime1.png", "sixFrame1 1s steps(5) forwards"],
+						]; /* 後ろから順に入れることに注意 */
+			function playNextAnimation(target) {
+							/* animeListからカット情報を取り出す。もう次が無いときは何もしない，情報が取り出せたときはフォーマットしてstyleに指定する */
+							let nextCut = animeList.pop();
+							if (nextCut !== undefined) { /* 空のArrayをpopさせると返り値はundefined*/
+											target.style.background = "url('" + nextCut[0] + "') no-repeat";
+											target.style.animation = nextCut[1];
+										}
+							return;
+						}
+		</script>
 	</head>
 	<body>
-		<div id="screen" onclick="this.classList.add('moving')"></div>
+		<div id="screen" onclick="playNextAnimation(this)"></div>
 	</body>
 </html>
 
